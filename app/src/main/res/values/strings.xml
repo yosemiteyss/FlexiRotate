@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">FlexiRotate</string>
+    <string name="accessibility_service_description">Foldable State</string>
+</resources>
