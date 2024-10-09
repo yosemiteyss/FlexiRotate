@@ -20,18 +20,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Keystore Properties
+      - name: Setup Release Keystore
         run: |
           rm -f keystore.properties
-          cat <<EOF > ./keystore/keystore.properties
-          RELEASE_STORE_FILE:keystore/release.keystore
-          RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_KEY_PASSWORD:${{ secrets.RELEASE_KEY_PASSWORD }}
-          EOF
-
-      - name: Decode Keystore
-        run: echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./keystore/release.keystore
+          touch keystore.properties
+          echo "RELEASE_STORE_FILE:./keystore/release.keystore" >> keystore.properties
+          echo "RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}" >> keystore.properties
+          echo "RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}" >> keystore.properties
+          echo "RELEASE_KEY_PASSWORD:${{ secrets.RELEASE_KEY_PASSWORD }}" >> keystore.properties
+          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./keystore/release.keystore
 
       - name: Build Release APK
         run: gradlew assembleRelease --stacktrace
