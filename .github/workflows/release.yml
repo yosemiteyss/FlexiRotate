@@ -14,11 +14,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Dependencies
-        run: |
-          apt-get update
-          apt-get install -y wget unzip
-
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
