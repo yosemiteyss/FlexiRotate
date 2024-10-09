@@ -23,7 +23,7 @@ jobs:
       - name: Setup Keystore Properties
         run: |
           rm -f keystore.properties
-          cat <<EOF > keystore.properties
+          cat <<EOF > ./keystore/keystore.properties
           RELEASE_STORE_FILE:keystore/release.keystore
           RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}
