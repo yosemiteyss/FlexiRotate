@@ -21,25 +21,14 @@ jobs:
           distribution: 'zulu'
 
       - name: Setup Android SDK
+        run: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools' # instead of the default 'tools platform-tools'
+
+      - name: Setup build-tools
         run: |
-          mkdir -p $ANDROID_HOME
-          
-          wget -O $ANDROID_HOME/commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          unzip $ANDROID_HOME/commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
-          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-          rm $ANDROID_HOME/commandlinetools.zip
-          
-          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          
-          wget -O $ANDROID_HOME/platform-tools.tar.xz https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v34.0.4/platform-tools-34.0.4-aarch64.tar.xz
-          tar -xf $ANDROID_HOME/platform-tools.tar.xz
-          rm $ANDROID_HOME/platform-tools.tar.xz
-          
-          echo "$ANDROID_HOME/build-tools" >> $GITHUB_PATH
-          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-          
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          sdkmanager --uninstall "build-tools;30.0.3"
+          sdkmanager tools
 
       - name: Setup Release Keystore
         run: |
