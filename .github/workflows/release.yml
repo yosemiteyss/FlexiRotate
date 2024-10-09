@@ -28,7 +28,7 @@ jobs:
           echo "RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}" >> keystore.properties
           echo "RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}" >> keystore.properties
           echo "RELEASE_KEY_PASSWORD:${{ secrets.RELEASE_KEY_PASSWORD }}" >> keystore.properties
-          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./keystore/release.keystore
+          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./app/keystore/release.keystore
 
       - name: Build Release APK
         run: gradlew assembleRelease --stacktrace
