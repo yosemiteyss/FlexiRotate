@@ -7,9 +7,17 @@ jobs:
   build:
     runs-on: [ self-hosted, linux ]
 
+    env:
+      ANDROID_HOME: ${{ github.workspace }}/android-sdk
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Setup Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -18,12 +26,13 @@ jobs:
           distribution: 'zulu'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'platform-tools' # instead of the default 'tools platform-tools'
-
-      - name: Install SDK Tools
-        run: sdkmanager tools
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip commandlinetools.zip
+          unzip commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          rm commandlinetools.zip
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
 
       - name: Setup Release Keystore
         run: |
