@@ -23,17 +23,16 @@ jobs:
       - name: Setup Android SDK
         run: |
           mkdir -p $ANDROID_HOME
-          cd $ANDROID_HOME
           
-          wget -O commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          unzip commandlinetools.zip -d $ANDROID_HOME
-          rm commandlinetools.zip
+          wget -O $ANDROID_HOME/commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip $ANDROID_HOME/commandlinetools.zip -d $ANDROID_HOME
+          rm $ANDROID_HOME/commandlinetools.zip
           
           echo "$ANDROID_HOME/cmdline-tools/bin" >> $GITHUB_PATH
           
-          wget -O platform-tools.tar.xz https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v34.0.4/platform-tools-34.0.4-aarch64.tar.xz
-          tar -xf platform-tools.tar.xz
-          rm platform-tools.tar.xz
+          wget -O $ANDROID_HOME/platform-tools.tar.xz https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v34.0.4/platform-tools-34.0.4-aarch64.tar.xz
+          tar -xf $ANDROID_HOME/platform-tools.tar.xz
+          rm $ANDROID_HOME/platform-tools.tar.xz
           
           echo "$ANDROID_HOME/build-tools" >> $GITHUB_PATH
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
