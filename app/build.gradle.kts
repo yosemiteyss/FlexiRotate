@@ -8,9 +8,13 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+fun loadKeystoreProperties(): Properties {
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+    return keystoreProperties
+}
 
 android {
     namespace = "com.yosemiteyss.flexirotate"
@@ -31,6 +35,7 @@ android {
 
     signingConfigs {
         create("release") {
+            val keystoreProperties = loadKeystoreProperties()
             keyAlias = keystoreProperties["RELEASE_KEY_ALIAS"] as String
             keyPassword = keystoreProperties["RELEASE_KEY_PASSWORD"] as String
             storeFile = file(keystoreProperties["RELEASE_STORE_FILE"] as String)
