@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
 
     steps:
       - name: Checkout Repository
@@ -45,10 +45,8 @@ jobs:
           PACKAGE_NAME=$(aapt dump badging "$APK_PATH" | grep "package: name=" | sed -n "s/.*package: name='\([^']*\).*/\1/p")
           VERSION_NAME=$(aapt dump badging "$APK_PATH" | grep "versionName=" | sed -n "s/.*versionName='\([^']*\).*/\1/p")
           
-          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
-          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
-          echo OUTPUT_NAME=${PACKAGE_NAME}-${VERSION_NAME}-${GITHUB_RUN_NUMBER}.apk >> $GITHUB_ENV
-          echo OUTPUT_NAME=${{ env.OUTPUT_NAME }}
+          echo "OUTPUT_NAME=$PACKAGE_NAME-$VERSION_NAME-$GITHUB_RUN_NUMBER.apk" >> $GITHUB_ENV
+          echo ${{ env.OUTPUT_NAME }}
           
           mv "./app/build/outputs/apk/release/app-release.apk" "./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}"
 
