@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "63486862025",
+    "project_id": "flexirotate",
+    "storage_bucket": "flexirotate.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63486862025:android:f972ecc32052a41115a318",
+        "android_client_info": {
+          "package_name": "com.yosemiteyss.flexirotate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWU2cDHkjm-mC5G1WTuRA-NzN59DX1zmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

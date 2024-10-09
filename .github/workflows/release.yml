@@ -1,0 +1,57 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Keystore Properties
+        run: |
+          rm -f keystore.properties
+          cat <<EOF > keystore.properties
+          RELEASE_STORE_FILE:keystore/release.keystore
+          RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD:${{ secrets.RELEASE_KEY_PASSWORD }}
+          EOF
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./keystore/release.keystore
+
+      - name: Build Release APK
+        run: gradlew assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: |
+          APK_PATH=./app/build/outputs/apk/release/app-release.apk
+          
+          PACKAGE_NAME=$(aapt dump badging "$APK_PATH" | grep "package: name=" | sed -n "s/.*package: name='\([^']*\).*/\1/p")
+          VERSION_NAME=$(aapt dump badging "$APK_PATH" | grep "versionName=" | sed -n "s/.*versionName='\([^']*\).*/\1/p")
+          
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo OUTPUT_NAME=${PACKAGE_NAME}-${VERSION_NAME}-${GITHUB_RUN_NUMBER}.apk >> $GITHUB_ENV
+          echo OUTPUT_NAME=${{ env.OUTPUT_NAME }}
+          
+          mv "./app/build/outputs/apk/release/app-release.apk" "./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.OUTPUT_NAME }}
+          path: app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}
