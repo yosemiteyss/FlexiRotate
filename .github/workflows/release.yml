@@ -24,10 +24,13 @@ jobs:
         run: |
           rm -f keystore.properties
           touch keystore.properties
+          
           echo "RELEASE_STORE_FILE:./keystore/release.keystore" >> keystore.properties
           echo "RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}" >> keystore.properties
           echo "RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}" >> keystore.properties
           echo "RELEASE_KEY_PASSWORD:${{ secrets.RELEASE_KEY_PASSWORD }}" >> keystore.properties
+          
+          mkdir -p ./app/keystore
           echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./app/keystore/release.keystore
 
       - name: Build Release APK
