@@ -30,15 +30,6 @@ android {
     }
 
     signingConfigs {
-        // SigningConfig with name 'debug' already exists.
-        getByName("debug") {
-            keyAlias = keystoreProperties["DEBUG_KEY_ALIAS"] as String
-            keyPassword = keystoreProperties["DEBUG_KEY_PASSWORD"] as String
-            storeFile = file(keystoreProperties["DEBUG_STORE_FILE"] as String)
-            storePassword = keystoreProperties["DEBUG_STORE_PASSWORD"] as String
-        }
-
-        // Release keystore for testing only.
         create("release") {
             keyAlias = keystoreProperties["RELEASE_KEY_ALIAS"] as String
             keyPassword = keystoreProperties["RELEASE_KEY_PASSWORD"] as String
@@ -48,10 +39,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("debug")
-        }
-
         release {
             isMinifyEnabled = true
             isShrinkResources = true
