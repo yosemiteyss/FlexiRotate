@@ -16,8 +16,8 @@ jobs:
 
       - name: Setup Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
+          apt-get update
+          apt-get install -y wget unzip
 
       - name: Setup JDK
         uses: actions/setup-java@v4
