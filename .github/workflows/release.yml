@@ -21,7 +21,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Setup Android SDK
-        run: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools' # instead of the default 'tools platform-tools'
 
