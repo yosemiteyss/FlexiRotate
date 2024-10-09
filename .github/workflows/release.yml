@@ -31,7 +31,9 @@ jobs:
           echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./app/keystore/release.keystore
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --stacktrace
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --stacktrace
 
       - name: Rename APK
         run: |
