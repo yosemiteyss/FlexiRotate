@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ self-hosted, linux ]
+    runs-on: ubuntu-latest
 
     env:
       ANDROID_HOME: $HOME/android-sdk
@@ -22,13 +22,6 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: 'platform-tools' # instead of the default 'tools platform-tools'
-
-      - name: Setup build-tools
-        run: |
-          sdkmanager --uninstall "build-tools;30.0.3"
-          sdkmanager tools
 
       - name: Setup Release Keystore
         run: |
