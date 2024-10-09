@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux]
+    runs-on: [ self-hosted, linux ]
 
     steps:
       - name: Checkout Repository
@@ -20,7 +20,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'platform-tools'
+          packages: 'platform-tools' # instead of the default 'tools platform-tools'
+
+      - name: Install SDK Tools
+        run: sdkmanager tools
 
       - name: Setup Release Keystore
         run: |
