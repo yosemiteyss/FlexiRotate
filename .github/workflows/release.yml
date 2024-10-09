@@ -25,6 +25,13 @@ jobs:
           mkdir -p $ANDROID_HOME
           cd $ANDROID_HOME
           
+          wget -O commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          rm commandlinetools.zip
+          
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          
           wget -O platform-tools.tar.xz https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v34.0.4/platform-tools-34.0.4-aarch64.tar.xz
           tar -xf platform-tools.tar.xz
           rm platform-tools.tar.xz
