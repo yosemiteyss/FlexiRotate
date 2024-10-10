@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">FlexiRotate</string>
+    <string name="action_go">Go</string>
+    <string name="title_setup">Setup</string>
     <string name="accessibility_service_description">Auto-rotate turns on when the device is unfolded and off when folded.</string>
     <string name="permission_notification_title">Enable notification</string>
     <string name="permission_notification_description">Grant notification permission to receive alerts and information.</string>
@@ -9,9 +11,5 @@
     <string name="ignore_battery_optimization_description">Disable battery optimization to allow this app keep running in background.</string>
     <string name="enable_accessibility_title">Enable accessibility</string>
     <string name="enable_accessibility_description">Enable accessibility service to allow this app manage auto-rotate.</string>
-    <string name="action_go">Go</string>
-    <string name="title_setup">Setup</string>
-    <string name="setup_completed">FlexiRotate service is running. Setup completed.</string>
-    <string name="setup_completed_exit">Exit</string>
     <string name="error_cannot_detect_fold_state">Cannot detect fold state on this device.</string>
 </resources>

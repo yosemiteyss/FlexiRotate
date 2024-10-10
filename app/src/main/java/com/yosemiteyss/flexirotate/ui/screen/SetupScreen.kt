@@ -84,7 +84,7 @@ private fun SetupListRow(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun SetupScreen(viewModel: SetupScreenViewModel = SetupScreenViewModel()) {
+fun SetupScreen(viewModel: SetupViewModel = SetupViewModel()) {
     val context = LocalContext.current
 
     val topAppBarState = rememberTopAppBarState()

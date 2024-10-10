@@ -97,6 +97,9 @@ class FoldStateRotateService : AccessibilityService(), SensorEventListener {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        event?.let {
+            Log.d(TAG, "onAccessibilityEvent: $event")
+        }
     }
 
     override fun onInterrupt() {

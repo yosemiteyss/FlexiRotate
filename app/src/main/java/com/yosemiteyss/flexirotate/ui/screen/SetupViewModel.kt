@@ -26,7 +26,7 @@ data class SetupSteps(
         get() = isNotificationEnabled && isWriteSettingsEnabled && isBatteryOptimizationIgnored
 }
 
-class SetupScreenViewModel : ViewModel() {
+class SetupViewModel : ViewModel() {
     private val _setupSteps = MutableStateFlow(SetupSteps())
     val setupSteps: StateFlow<SetupSteps> = _setupSteps.asStateFlow()
 
