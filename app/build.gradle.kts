@@ -81,6 +81,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
@@ -93,6 +94,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.crashlytics)
+    implementation(libs.google.android.material)
 
     testImplementation(libs.junit)
 
