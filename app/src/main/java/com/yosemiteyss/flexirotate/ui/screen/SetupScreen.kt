@@ -1,72 +1,175 @@
 package com.yosemiteyss.flexirotate.ui.screen
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.*
+import androidx.compose.foundation.lazy.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.res.*
+import androidx.compose.ui.text.style.*
+import androidx.compose.ui.unit.*
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.currentStateAsState
-import com.yosemiteyss.flexirotate.ui.composable.PagerIndicator
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import com.yosemiteyss.flexirotate.R
+import com.yosemiteyss.flexirotate.ui.theme.Spacing
 
 @Composable
-fun SetupScreen() {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+private fun SetupListRow(
+    title: String,
+    description: String,
+    isDone: Boolean,
+    isButtonEnabled: Boolean = true,
+    onButtonPressed: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.LARGE, vertical = Spacing.MEDIUM)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateAsState()
-    val pageList = remember { mutableStateOf(SetupPageManager.getPageList()) }
+            Spacer(modifier = Modifier.height(Spacing.MEDIUM))
 
-    val pagerState = rememberPagerState(
-        initialPage = SetupPageManager.getCurrentPage(context).ordinal,
-        pageCount = { pageList.value.size }
-    )
-
-    LaunchedEffect(lifecycleState) {
-        if (lifecycleState == Lifecycle.State.RESUMED) {
-            pagerState.animateScrollToPage(SetupPageManager.getCurrentPage(context).ordinal)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-    }
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+        Spacer(modifier = Modifier.width(Spacing.LARGE))
+
+        Box(
+            modifier = Modifier.width(72.dp)
         ) {
-            Box(modifier = Modifier.weight(1f)) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize(),
-                    userScrollEnabled = false
-                ) { index ->
-                    when (pageList.value[index]) {
-                        SetupPageManager.SetupPage.ENABLE_NOTIFICATION -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                EnableNotificationPage()
-                            } else {
-                                throw IllegalStateException("SetupPage.ENABLE_NOTIFICATION should only be used when sdk >= 33")
-                            }
-                        }
-
-                        SetupPageManager.SetupPage.ENABLE_WRITE_SETTINGS -> EnableWriteSettingsPage()
-                        SetupPageManager.SetupPage.ENABLE_ACCESSIBILITY -> EnableAccessibilityPage()
-                        SetupPageManager.SetupPage.COMPLETED -> CompleteSetupPage()
-                    }
+            if (isDone) {
+                Icon(
+                    imageVector = Icons.Rounded.Done,
+                    contentDescription = title,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Center)
+                )
+            } else {
+                Button(
+                    onClick = onButtonPressed,
+                    enabled = isButtonEnabled,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Text(text = stringResource(R.string.action_go))
                 }
             }
-
-            PagerIndicator(
-                count = pagerState.pageCount,
-                currentIndex = pagerState.currentPage
-            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@Composable
+fun SetupScreen(viewModel: SetupScreenViewModel = SetupScreenViewModel()) {
+    val context = LocalContext.current
 
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
 
+    val setupSteps by viewModel.setupSteps.collectAsStateWithLifecycle()
 
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.refreshSetupSteps(context)
+    }
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.title_setup),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                item {
+                    val notificationPermissionState =
+                        rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+
+                    SetupListRow(
+                        title = stringResource(R.string.permission_notification_title),
+                        description = stringResource(R.string.permission_notification_description),
+                        isDone = setupSteps.isNotificationEnabled,
+                        onButtonPressed = {
+                            notificationPermissionState.launchPermissionRequest()
+                        }
+                    )
+                }
+            }
+
+            item {
+                SetupListRow(
+                    title = stringResource(R.string.modify_write_settings_title),
+                    description = stringResource(R.string.modify_write_settings_description),
+                    isDone = setupSteps.isWriteSettingsEnabled,
+                    onButtonPressed = {
+                        val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                        intent.data = Uri.parse("package:${context.packageName}")
+                        context.startActivity(intent)
+                    }
+                )
+            }
+
+            item {
+                SetupListRow(
+                    title = stringResource(R.string.ignore_battery_optimization_title),
+                    description = stringResource(R.string.ignore_battery_optimization_description),
+                    isDone = setupSteps.isBatteryOptimizationIgnored,
+                    onButtonPressed = {
+                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                        intent.data = Uri.parse("package:${context.packageName}")
+                        context.startActivity(intent)
+                    }
+                )
+            }
+
+            item {
+                SetupListRow(
+                    title = stringResource(R.string.enable_accessibility_title),
+                    description = stringResource(R.string.enable_accessibility_description),
+                    isDone = setupSteps.isAccessibilityEnabled,
+                    isButtonEnabled = setupSteps.canEnableAccessibility,
+                    onButtonPressed = {
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        context.startActivity(intent)
+                    }
+                )
+            }
+        }
+    }
+}

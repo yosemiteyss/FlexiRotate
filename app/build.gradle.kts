@@ -34,20 +34,20 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            val keystoreProperties = loadKeystoreProperties()
-            keyAlias = keystoreProperties["RELEASE_KEY_ALIAS"] as String
-            keyPassword = keystoreProperties["RELEASE_KEY_PASSWORD"] as String
-            storeFile = file(keystoreProperties["RELEASE_STORE_FILE"] as String)
-            storePassword = keystoreProperties["RELEASE_STORE_PASSWORD"] as String
-        }
+//        create("release") {
+//            val keystoreProperties = loadKeystoreProperties()
+//            keyAlias = keystoreProperties["RELEASE_KEY_ALIAS"] as String
+//            keyPassword = keystoreProperties["RELEASE_KEY_PASSWORD"] as String
+//            storeFile = file(keystoreProperties["RELEASE_STORE_FILE"] as String)
+//            storePassword = keystoreProperties["RELEASE_STORE_PASSWORD"] as String
+//        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            //signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
