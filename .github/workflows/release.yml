@@ -7,9 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_HOME: $HOME/android-sdk
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -44,14 +41,11 @@ jobs:
       - name: Rename APK
         run: |
           APK_PATH=./app/build/outputs/apk/release/app-release.apk
-          
           PACKAGE_NAME=$(aapt dump badging "$APK_PATH" | grep "package: name=" | sed -n "s/.*package: name='\([^']*\).*/\1/p")
           VERSION_NAME=$(aapt dump badging "$APK_PATH" | grep "versionName=" | sed -n "s/.*versionName='\([^']*\).*/\1/p")
           
-          echo "OUTPUT_NAME=$PACKAGE_NAME-$VERSION_NAME-$GITHUB_RUN_NUMBER.apk" >> $GITHUB_ENV
-          echo ${{ env.OUTPUT_NAME }}
-          
-          mv "./app/build/outputs/apk/release/app-release.apk" "./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}"
+          echo "OUTPUT_NAME=$PACKAGE_NAME-$VERSION_NAME-$GITHUB_RUN_NUMBER.apk" >> $GITHUB_ENV          
+          mv ./app/build/outputs/apk/release/app-release.apk ./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
