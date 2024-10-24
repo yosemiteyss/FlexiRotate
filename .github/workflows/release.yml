@@ -47,8 +47,10 @@ jobs:
           PACKAGE_NAME=$(aapt dump badging "$APK_PATH" | grep "package: name=" | sed -n "s/.*package: name='\([^']*\).*/\1/p")
           VERSION_NAME=$(aapt dump badging "$APK_PATH" | grep "versionName=" | sed -n "s/.*versionName='\([^']*\).*/\1/p")
           
-          echo "OUTPUT_NAME=$PACKAGE_NAME-$VERSION_NAME-release-$GITHUB_RUN_NUMBER.apk" >> $GITHUB_ENV          
-          mv ./app/build/outputs/apk/release/app-release.apk ./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}
+          OUTPUT_NAME="$PACKAGE_NAME-$VERSION_NAME-release-$GITHUB_RUN_NUMBER.apk"
+          echo "OUTPUT_NAME=$OUTPUT_NAME" >> $GITHUB_ENV
+          
+          mv "$APK_PATH" "./app/build/outputs/apk/release/$OUTPUT_NAME"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
