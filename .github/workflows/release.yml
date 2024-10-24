@@ -11,7 +11,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup JDK
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -20,12 +20,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Release Keystore
+      - name: Setup Build Tools
+        run: echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH"
+
+      - name: Setup Keystore
         run: |
           rm -f keystore.properties
           touch keystore.properties
           
-          echo "RELEASE_STORE_FILE:./keystore/release.keystore" >> keystore.properties
+          echo "RELEASE_STORE_FILE:./keystore/release.jks" >> keystore.properties
           echo "RELEASE_STORE_PASSWORD:${{ secrets.RELEASE_STORE_PASSWORD }}" >> keystore.properties
           echo "RELEASE_KEY_ALIAS:${{ secrets.RELEASE_KEY_ALIAS }}" >> keystore.properties
           echo "RELEASE_KEY_PASSWORD:${{ secrets.RELEASE_KEY_PASSWORD }}" >> keystore.properties
