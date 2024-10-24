@@ -44,10 +44,13 @@ jobs:
       - name: Rename APK
         run: |
           APK_PATH=./app/build/outputs/apk/release/app-release.apk
+          
           PACKAGE_NAME=$(aapt dump badging "$APK_PATH" | grep "package: name=" | sed -n "s/.*package: name='\([^']*\).*/\1/p")
           VERSION_NAME=$(aapt dump badging "$APK_PATH" | grep "versionName=" | sed -n "s/.*versionName='\([^']*\).*/\1/p")
+          RELEASE_NAME=$VERSION_NAME-release-$GITHUB_RUN_NUMBER
+          OUTPUT_NAME="$PACKAGE_NAME-$RELEASE_NAME.apk"
           
-          OUTPUT_NAME="$PACKAGE_NAME-$VERSION_NAME-release-$GITHUB_RUN_NUMBER.apk"
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
           echo "OUTPUT_NAME=$OUTPUT_NAME" >> $GITHUB_ENV
           
           mv "$APK_PATH" "./app/build/outputs/apk/release/$OUTPUT_NAME"
@@ -55,6 +58,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ env.RELEASE_NAME }}
+          tag_name: ${{ env.RELEASE_NAME }}
           files: ./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
