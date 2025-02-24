@@ -34,7 +34,7 @@ jobs:
           echo "releaseKeyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}" >> keystore.properties
           
           mkdir -p ./app/keystore
-          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./app/keystore/release.keystore
+          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./app/keystore/release.jks
 
       - name: Build Release APK
         run: |
