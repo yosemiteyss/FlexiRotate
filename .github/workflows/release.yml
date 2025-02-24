@@ -1,0 +1,65 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Build Tools
+        run: echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
+
+      - name: Setup Keystore
+        run: |
+          rm -f keystore.properties
+          touch keystore.properties
+          
+          echo "releaseStoreFile=./keystore/release.jks" >> keystore.properties
+          echo "releaseStorePassword=${{ secrets.RELEASE_STORE_PASSWORD }}" >> keystore.properties
+          echo "releaseKeyAlias=${{ secrets.RELEASE_KEY_ALIAS }}" >> keystore.properties
+          echo "releaseKeyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}" >> keystore.properties
+          
+          mkdir -p ./app/keystore
+          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ./app/keystore/release.keystore
+
+      - name: Build Release APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: |
+          APK_PATH=./app/build/outputs/apk/release/app-release.apk
+          
+          PACKAGE_NAME=$(aapt dump badging "$APK_PATH" | grep "package: name=" | sed -n "s/.*package: name='\([^']*\).*/\1/p")
+          VERSION_NAME=$(aapt dump badging "$APK_PATH" | grep "versionName=" | sed -n "s/.*versionName='\([^']*\).*/\1/p")
+          RELEASE_NAME=$VERSION_NAME-release-$GITHUB_RUN_NUMBER
+          OUTPUT_NAME="$PACKAGE_NAME-$RELEASE_NAME.apk"
+          
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+          echo "OUTPUT_NAME=$OUTPUT_NAME" >> $GITHUB_ENV
+          
+          mv "$APK_PATH" "./app/build/outputs/apk/release/$OUTPUT_NAME"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ env.RELEASE_NAME }}
+          tag_name: ${{ env.RELEASE_NAME }}
+          files: ./app/build/outputs/apk/release/${{ env.OUTPUT_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.CREATE_RELEASE_PAT }}
